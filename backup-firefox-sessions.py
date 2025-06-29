@@ -2,9 +2,9 @@
 import datetime
 import json
 import os
-import shutil
 import subprocess
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,16 +16,11 @@ FORMATTED_DATE = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 SESSION_STORE_BACKUPS_IDENTIFIER = 'sessionstore-backups'
 BACKUP_JSON_LOCATION = f"{BACKUP_LOCATION}/{FORMATTED_DATE}-{SESSION_STORE_BACKUPS_IDENTIFIER}.json"
 
-backup_folders = sorted(Path(BACKUP_LOCATION).iterdir(), key=os.path.getmtime, reverse=True)
-backup_folders = [
-    backup_folder for backup_folder in backup_folders
-    if SESSION_STORE_BACKUPS_IDENTIFIER in backup_folder.name
-]
-backup_folders_to_delete = backup_folders[10:]
+backup_json_files = sorted(Path(BACKUP_LOCATION).iterdir(), key=os.path.getmtime, reverse=True)
+backup_folders_to_delete = backup_json_files[10:]
 for backup_folder_to_delete in backup_folders_to_delete:
     backup_folder_to_delete = "/".join(backup_folder_to_delete.parts[1:])
-    backup_folder_to_delete = f"/{backup_folder_to_delete}"
-    shutil.rmtree(backup_folder_to_delete)
+    os.remove(f"/{backup_folder_to_delete}")
 
 command = f"./mozlz4-linux -x '{PROFILE_LOCATION}' > '{BACKUP_JSON_LOCATION}'"
 print(command)
