@@ -17,7 +17,7 @@ for backup_folder_to_delete in backup_folders_to_delete:
     backup_folder_to_delete = "/".join(backup_folder_to_delete.parts[1:])
     os.remove(f"/{backup_folder_to_delete}")
 
-PROFILE_COMPRESSED_JSON_LOCATION = f"{os.getenv('PROFILE_FOLDER_LOCATION')}/recovery.jsonlz4"
+PROFILE_COMPRESSED_JSON_LOCATION = f"{os.getenv('PROFILE_COMPRESSED_JSON_FOLDER_LOCATION')}/recovery.jsonlz4"
 BACKUP_JSON_LOCATION = f"{BACKUP_LOCATION}/{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
 
 command = f"./mozlz4-linux -x '{PROFILE_COMPRESSED_JSON_LOCATION}' > '{BACKUP_JSON_LOCATION}'"

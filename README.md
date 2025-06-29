@@ -20,7 +20,7 @@ create the file `backup_firefox.sh`
 #!/bin/bash
 
 
-pushd /path/to/repository/ && \
+pushd /path/to/repository/ && git pull origin master && \
  source path/to/virtual_env/bin/activate && \
   /path/to/repository/backup-firefox-sessions.py
 ```
