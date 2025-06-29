@@ -8,7 +8,7 @@ A Python script to automate the process of backing up your firefox sessions loca
 
 ```.dotenv
 PROFILE_LOCATION = "<location>"
-BACKUP_LOCATION = "<local_location_anywhere_on_computer"
+BACKUP_LOCATION = "<local_location_anywhere_on_computer>"
 ```
 
 obtain `PROFILE_LOCATION` from https://www.techrepublic.com/article/how-to-backup-firefox-to-recover-a-potentially-lost-session/
@@ -26,5 +26,5 @@ pushd /path/to/repository/ && \
 ```
 [Cron String Generator](https://crontab.guru/)
 ```shell
-*/5 * * * * /path/to/backup-firefox-sessions.py
+*/5 * * * * /path/to/backup_firefox.sh
 ```

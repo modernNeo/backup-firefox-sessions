@@ -8,12 +8,13 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
-
 PROFILE_LOCATION = os.getenv("PROFILE_LOCATION")
 BACKUP_LOCATION = os.getenv("BACKUP_LOCATION")
-FORMATTED_DATE = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
+
+FORMATTED_DATE = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 SESSION_STORE_BACKUPS_IDENTIFIER = 'sessionstore-backups'
+BACKUP_JSON_LOCATION = f"{BACKUP_LOCATION}/{FORMATTED_DATE}-{SESSION_STORE_BACKUPS_IDENTIFIER}/backup.json"
 
 backup_folders = sorted(Path(BACKUP_LOCATION).iterdir(), key=os.path.getmtime, reverse=True)
 backup_folders = [
@@ -26,14 +27,9 @@ for backup_folder_to_delete in backup_folders_to_delete:
     backup_folder_to_delete = f"/{backup_folder_to_delete}"
     shutil.rmtree(backup_folder_to_delete)
 
-shutil.copytree(PROFILE_LOCATION, f'{BACKUP_LOCATION}/{FORMATTED_DATE}-{SESSION_STORE_BACKUPS_IDENTIFIER}')
+subprocess.getstatusoutput(f"./mozlz4-linux -x {PROFILE_LOCATION}/recovery.jsonlz4 > {BACKUP_JSON_LOCATION}")
 
-subprocess.getstatusoutput(
-    f"./mozlz4-linux -x {BACKUP_LOCATION}/{FORMATTED_DATE}-{SESSION_STORE_BACKUPS_IDENTIFIER}/recovery.jsonlz4 > "
-    f"{BACKUP_LOCATION}/{FORMATTED_DATE}-{SESSION_STORE_BACKUPS_IDENTIFIER}/backup.json"
-)
-
-backup_json = json.load(open(f'{BACKUP_LOCATION}/{FORMATTED_DATE}-{SESSION_STORE_BACKUPS_IDENTIFIER}/backup.json'))
+backup_json = json.load(open(BACKUP_JSON_LOCATION))
 tab_urls = {}
 for window in backup_json['windows']:
     for tab in window['tabs']:
@@ -50,5 +46,5 @@ for window in backup_json['windows']:
                     'title': closedTabEntry['title'] if 'title' in closedTabEntry else None,
                     'url' : closedTabEntry['url']
                 }
-with open(f'{BACKUP_LOCATION}/{FORMATTED_DATE}-{SESSION_STORE_BACKUPS_IDENTIFIER}/backup.json', "w") as f:
+with open(BACKUP_JSON_LOCATION, "w") as f:
     json.dump(list(tab_urls.values()), f, indent=4)
