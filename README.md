@@ -2,6 +2,8 @@
 
 A Python script to automate the process of backing up your firefox sessions locally because in their infinite wisdom, [firefox decided that such a feature is not necessary](https://support.mozilla.org/en-US/questions/1204253).
 
+[Also had to add a custom binary cause of a wierd format that FireFox uses for compression.](https://superuser.com/a/1563665)
+
 ## Installation
 
 ```.dotenv
