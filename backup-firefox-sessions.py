@@ -27,7 +27,7 @@ for backup_folder_to_delete in backup_folders_to_delete:
     backup_folder_to_delete = f"/{backup_folder_to_delete}"
     shutil.rmtree(backup_folder_to_delete)
 
-command = f"./mozlz4-linux -x {PROFILE_LOCATION} > {BACKUP_JSON_LOCATION}"
+command = f"./mozlz4-linux -x '{PROFILE_LOCATION}' > '{BACKUP_JSON_LOCATION}'"
 print(command)
 subprocess.getstatusoutput(command)
 
