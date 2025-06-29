@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 from pathlib import Path
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 
@@ -28,20 +29,24 @@ subprocess.getstatusoutput(command)
 
 backup_json = json.load(open(BACKUP_JSON_LOCATION))
 tab_urls = {}
+
+def add_tab_to_dict(urls, tab_entry):
+    if 'url' in tab_entry:
+        url = tab_entry['url']
+        hostname = urlparse(url).hostname
+        if hostname not in urls:
+            urls[hostname] = []
+        urls[hostname].append({
+            'title': tab_entry['title'] if 'title' in tab_entry else None,
+            'url': url
+        })
+
 for window in backup_json['windows']:
     for tab in window['tabs']:
         for entry in tab['entries']:
-            if 'url' in entry:
-                tab_urls[entry['url']] = {
-                    'title': entry['title'] if 'title' in entry else None,
-                    'url' : entry['url']
-                }
+            add_tab_to_dict(tab_urls, entry)
     for closedTab in window['_closedTabs']:
         for closedTabEntry in closedTab['state']['entries']:
-            if 'url' in closedTabEntry:
-                tab_urls[closedTabEntry['url']] = {
-                    'title': closedTabEntry['title'] if 'title' in closedTabEntry else None,
-                    'url' : closedTabEntry['url']
-                }
+            add_tab_to_dict(tab_urls, closedTabEntry)
 with open(BACKUP_JSON_LOCATION, "w") as f:
-    json.dump(list(tab_urls.values()), f, indent=4)
+    json.dump(tab_urls, f, indent=4)
