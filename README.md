@@ -1,0 +1,1 @@
+# backup-firefox-sessions
