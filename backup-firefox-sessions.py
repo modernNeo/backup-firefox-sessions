@@ -17,10 +17,8 @@ for backup_folder_to_delete in backup_folders_to_delete:
     backup_folder_to_delete = "/".join(backup_folder_to_delete.parts[1:])
     os.remove(f"/{backup_folder_to_delete}")
 
-PROFILE_FOLDER_LOCATION = os.getenv("PROFILE_FOLDER_LOCATION")
-PROFILE_COMPRESSED_JSON_LOCATION = f"{PROFILE_FOLDER_LOCATION}/recovery.jsonlz4"
-FORMATTED_DATE = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-BACKUP_JSON_LOCATION = f"{BACKUP_LOCATION}/{FORMATTED_DATE}.json"
+PROFILE_COMPRESSED_JSON_LOCATION = f"{os.getenv('PROFILE_FOLDER_LOCATION')}/recovery.jsonlz4"
+BACKUP_JSON_LOCATION = f"{BACKUP_LOCATION}/{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
 
 command = f"./mozlz4-linux -x '{PROFILE_COMPRESSED_JSON_LOCATION}' > '{BACKUP_JSON_LOCATION}'"
 print(command)
@@ -29,13 +27,13 @@ subprocess.getstatusoutput(command)
 backup_json = json.load(open(BACKUP_JSON_LOCATION))
 tab_urls = {}
 
-def add_tab_to_dict(urls, tab_entry):
+def add_tab_to_dict(tab_entry):
     if 'url' in tab_entry:
         url = tab_entry['url']
         hostname = urlparse(url).hostname
-        if hostname not in urls:
-            urls[hostname] = []
-        urls[hostname].append({
+        if hostname not in tab_urls:
+            tab_urls[hostname] = []
+        tab_urls[hostname].append({
             'title': tab_entry['title'] if 'title' in tab_entry else None,
             'url': url
         })
@@ -43,9 +41,9 @@ def add_tab_to_dict(urls, tab_entry):
 for window in backup_json['windows']:
     for tab in window['tabs']:
         for entry in tab['entries']:
-            add_tab_to_dict(tab_urls, entry)
+            add_tab_to_dict(entry)
     for closedTab in window['_closedTabs']:
         for closedTabEntry in closedTab['state']['entries']:
-            add_tab_to_dict(tab_urls, closedTabEntry)
+            add_tab_to_dict(closedTabEntry)
 with open(BACKUP_JSON_LOCATION, "w") as f:
     json.dump(tab_urls, f, indent=4)
