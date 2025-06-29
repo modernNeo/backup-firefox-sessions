@@ -9,13 +9,7 @@ from urllib.parse import urlparse
 from dotenv import load_dotenv
 
 load_dotenv()
-PROFILE_LOCATION = os.getenv("PROFILE_LOCATION")
 BACKUP_LOCATION = os.getenv("BACKUP_LOCATION")
-
-PROFILE_LOCATION = f"{PROFILE_LOCATION}/recovery.jsonlz4"
-FORMATTED_DATE = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-SESSION_STORE_BACKUPS_IDENTIFIER = 'sessionstore-backups'
-BACKUP_JSON_LOCATION = f"{BACKUP_LOCATION}/{FORMATTED_DATE}-{SESSION_STORE_BACKUPS_IDENTIFIER}.json"
 
 backup_json_files = sorted(Path(BACKUP_LOCATION).iterdir(), key=os.path.getmtime, reverse=True)
 backup_folders_to_delete = backup_json_files[10:]
@@ -23,7 +17,12 @@ for backup_folder_to_delete in backup_folders_to_delete:
     backup_folder_to_delete = "/".join(backup_folder_to_delete.parts[1:])
     os.remove(f"/{backup_folder_to_delete}")
 
-command = f"./mozlz4-linux -x '{PROFILE_LOCATION}' > '{BACKUP_JSON_LOCATION}'"
+PROFILE_FOLDER_LOCATION = os.getenv("PROFILE_FOLDER_LOCATION")
+PROFILE_COMPRESSED_JSON_LOCATION = f"{PROFILE_FOLDER_LOCATION}/recovery.jsonlz4"
+FORMATTED_DATE = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+BACKUP_JSON_LOCATION = f"{BACKUP_LOCATION}/{FORMATTED_DATE}.json"
+
+command = f"./mozlz4-linux -x '{PROFILE_COMPRESSED_JSON_LOCATION}' > '{BACKUP_JSON_LOCATION}'"
 print(command)
 subprocess.getstatusoutput(command)
 
