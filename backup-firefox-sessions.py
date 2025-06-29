@@ -11,11 +11,12 @@ from dotenv import load_dotenv
 load_dotenv()
 BACKUP_LOCATION = os.getenv("BACKUP_LOCATION")
 
+os.mkdir(BACKUP_LOCATION)
 backup_json_files = sorted(Path(BACKUP_LOCATION).iterdir(), key=os.path.getmtime, reverse=True)
-backup_folders_to_delete = backup_json_files[300:] # aiming for at least a day's worth of backups
-for backup_folder_to_delete in backup_folders_to_delete:
-    backup_folder_to_delete = "/".join(backup_folder_to_delete.parts[1:])
-    os.remove(f"/{backup_folder_to_delete}")
+backup_json_files_to_delete = backup_json_files[300:] # aiming for at least a day's worth of backups
+for backup_json_file_to_delete in backup_json_files_to_delete:
+    backup_json_file_to_delete = "/".join(backup_json_file_to_delete.parts[1:])
+    os.remove(f"/{backup_json_file_to_delete}")
 
 PROFILE_COMPRESSED_JSON_LOCATION = f"{os.getenv('PROFILE_COMPRESSED_JSON_FOLDER_LOCATION')}/recovery.jsonlz4"
 BACKUP_JSON_LOCATION = f"{BACKUP_LOCATION}/{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
