@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/env python
 import datetime
 import json
 import os
@@ -34,15 +34,21 @@ subprocess.getstatusoutput(
 )
 
 backup_json = json.load(open(f'{BACKUP_LOCATION}/{FORMATTED_DATE}-{SESSION_STORE_BACKUPS_IDENTIFIER}/backup.json'))
-tab_urls = set()
+tab_urls = {}
 for window in backup_json['windows']:
     for tab in window['tabs']:
         for entry in tab['entries']:
             if 'url' in entry:
-                tab_urls.add(entry['url'])
+                tab_urls[entry['url']] = {
+                    'title': entry['title'] if 'title' in entry else None,
+                    'url' : entry['url']
+                }
     for closedTab in window['_closedTabs']:
         for closedTabEntry in closedTab['state']['entries']:
             if 'url' in closedTabEntry:
-                tab_urls.add(closedTabEntry['url'])
-with open(f'{BACKUP_LOCATION}/{FORMATTED_DATE}-{SESSION_STORE_BACKUPS_IDENTIFIER}/backup.1.json', "w") as f:
-    json.dump({"tabs" : list(tab_urls)}, f, indent=4)
+                tab_urls[closedTabEntry['url']] = {
+                    'title': closedTabEntry['title'] if 'title' in closedTabEntry else None,
+                    'url' : closedTabEntry['url']
+                }
+with open(f'{BACKUP_LOCATION}/{FORMATTED_DATE}-{SESSION_STORE_BACKUPS_IDENTIFIER}/backup.json', "w") as f:
+    json.dump(list(tab_urls.values()), f, indent=4)

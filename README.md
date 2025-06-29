@@ -14,7 +14,17 @@ BACKUP_LOCATION = "<local_location_anywhere_on_computer"
 obtain `PROFILE_LOCATION` from https://www.techrepublic.com/article/how-to-backup-firefox-to-recover-a-potentially-lost-session/
 
 ## CronTab Installation
+
+create the file `backup_firefox.sh`
+```shell
+#!/bin/bash
+
+
+pushd /path/to/repository/ && \
+ source path/to/virtual_env/bin/activate && \
+  /path/to/repository/backup-firefox-sessions.py
+```
 [Cron String Generator](https://crontab.guru/)
-```bash
+```shell
 */5 * * * * /path/to/backup-firefox-sessions.py
 ```
