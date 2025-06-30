@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 BACKUP_LOCATION = os.getenv("BACKUP_LOCATION")
 
-os.mkdir(BACKUP_LOCATION)
+Path(BACKUP_LOCATION).mkdir(parents=True,exist_ok=True)
 backup_json_files = sorted(Path(BACKUP_LOCATION).iterdir(), key=os.path.getmtime, reverse=True)
 backup_json_files_to_delete = backup_json_files[300:] # aiming for at least a day's worth of backups
 for backup_json_file_to_delete in backup_json_files_to_delete:
