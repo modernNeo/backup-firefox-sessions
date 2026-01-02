@@ -17,16 +17,19 @@ if not os.path.isdir(BACKUP_LOCATION):
     raise Exception(f"'{BACKUP_LOCATION}' is not a valid directory")
 if not os.path.isdir(PROFILE_LOCATIONS):
     raise Exception(f"there are no firefox profiles located under '{PROFILE_LOCATIONS}'")
+
+timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 for profile in os.listdir(PROFILE_LOCATIONS):
     if re.match(r"\w{8}.\d+.", profile):
-        PROFILE_BACKUP_LOCATION = os.path.join(BACKUP_LOCATION, profile)
+        PROFILE_BACKUP_LOCATION = os.path.join(BACKUP_LOCATION, profile, timestamp)
         Path(PROFILE_BACKUP_LOCATION).mkdir(parents=True, exist_ok=True)
         backup_json_files = sorted(Path(PROFILE_BACKUP_LOCATION).iterdir(), key=os.path.getmtime, reverse=True)
         backup_json_files_to_delete = backup_json_files[300:]  # aiming for at least a day's worth of backups
         for backup_json_file_to_delete in backup_json_files_to_delete:
             backup_json_file_to_delete = "/".join(backup_json_file_to_delete.parts[1:])
             os.remove(f"/{backup_json_file_to_delete}")
-        BACKUP_JSON_LOCATION = os.path.join(PROFILE_BACKUP_LOCATION, f"{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json")
+        BACKUP_JSON_LOCATION = os.path.join(PROFILE_BACKUP_LOCATION, f"{timestamp}.json")
+        BACKUP_JSONLZ4_LOCATION = os.path.join(PROFILE_BACKUP_LOCATION, f"{timestamp}.jsonlz4")
 
 
         profile_path = os.path.join(PROFILE_LOCATIONS, profile, "sessionstore-backups", "recovery.jsonlz4")
@@ -34,11 +37,11 @@ for profile in os.listdir(PROFILE_LOCATIONS):
             profile_path = os.path.join(PROFILE_LOCATIONS, profile, "sessionstore-backups", "previous.jsonlz4")
         if not os.path.exists(profile_path):
             continue
-        command = f"./mozlz4-linux -x '{profile_path}' > '{BACKUP_JSON_LOCATION}'"
+        command = f"./mozlz4-linux -x '{profile_path}' > '{BACKUP_JSONLZ4_LOCATION}'"
         print(command)
         output = subprocess.getstatusoutput(command)
 
-        backup_json = json.load(open(BACKUP_JSON_LOCATION))
+        backup_json = json.load(open(BACKUP_JSONLZ4_LOCATION))
         tab_urls = {}
 
         def add_tab_to_dict(tab_entry):
