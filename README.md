@@ -19,10 +19,10 @@ create the file `backup_firefox.sh`
 ```shell
 #!/bin/bash
 
-
-pushd /path/to/repository/ && git pull origin master && \
- source path/to/virtual_env/bin/activate && \
-  /path/to/repository/backup-firefox-sessions.py
+pushd /path/to/repository/  && git pull origin master && \
+	source path/to/virtual_env/bin/activate && \
+	python -m pip install -r requirements.txt && \
+	/path/to/repository/backup-firefox-sessions.py
 ```
 [Cron String Generator](https://crontab.guru/)
 ```shell
