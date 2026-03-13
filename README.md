@@ -6,25 +6,16 @@ A Python script to automate the process of backing up your firefox sessions loca
 
 ## Installation
 
-```.dotenv
-PROFILE_LOCATION = "<location>"
-BACKUP_LOCATION = "<local_location_anywhere_on_computer>"
-```
 
-obtain `PROFILE_LOCATION` from https://www.techrepublic.com/article/how-to-backup-firefox-to-recover-a-potentially-lost-session/
+obtain `PROFILE_LOCATIONS` from https://www.techrepublic.com/article/how-to-backup-firefox-to-recover-a-potentially-lost-session/
 
-## CronTab Installation
+```bash
+# optional env variables
+PROFILE_LOCATIONS # defaults to "$HOME/.mozilla/firefox"
+REPO_LOCATION # defaults to "$HOME/firefox_sessionsstore"
+VIRTUAL_ENV_LOCATION # defaults to "$HOME/firefox_sessionsstore"
+BACKUP_LOCATION # defaults to "$HOME/firefox_sessionsstore/archives"
+VIRTUAL_ENV_NAME # defaults to firefoxSessionStoreArchiver
 
-create the file `backup_firefox.sh`
-```shell
-#!/bin/bash
-
-pushd /path/to/repository/  && git pull origin master && \
-	source path/to/virtual_env/bin/activate && \
-	python -m pip install -r requirements.txt && \
-	/path/to/repository/backup-firefox-sessions.py
-```
-[Cron String Generator](https://crontab.guru/)
-```shell
-*/5 * * * * /path/to/backup_firefox.sh
+curl -sSL https://raw.githubusercontent.com/modernNeo/firefox_sessionstore_archiver/master/install_archiver.sh | bash
 ```
